@@ -1,9 +1,11 @@
 @extends('super.master-layout')
 
 @section('custom-css')
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <style>
-    .hidden-column {
-        display: none;
+    .table-hover tbody tr:hover {
+        background-color: rgba(16, 185, 129, 0.05);
+        transition: background-color 0.3s ease;
     }
 </style>
 @endsection
@@ -11,138 +13,97 @@
 @section('title', 'List Mahasiswa')
 
 @section('content')
-<div class="container-fluid mt-4">
-    <div class="row">
-        <div class="col-md-6">
-            <form id="importForm" action="{{ route('master.mahasiswa.import.proses') }}" method="POST"
-                enctype="multipart/form-data">
+@include('super.SidebarAdmin')
+
+<!-- Content -->
+<div class="container mx-auto px-4 sm:px-6 mt-6">
+    <!-- Import dan Action Buttons -->
+    <div class="flex justify-between items-center mb-6 gap-4">
+        <!-- Import Form -->
+        <div class="flex-1">
+            <form id="importForm" action="{{ route('master.mahasiswa.import.proses') }}" method="POST" enctype="multipart/form-data" class="flex space-x-3">
                 @csrf
-                <div class="input-group mb-3">
-                    <input type="file" class="form-control" name="excel_file">
-                    <button id="importButton" class="btn btn-primary" type="button">Import Data</button>
+                <div class="relative flex-1">
+                    <input type="file" name="excel_file" class="border border-gray-300 rounded-lg px-4 py-2 w-full">
                 </div>
+                <button id="importButton" type="button" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center">
+                    <i class="fas fa-file-import mr-2"></i> Import Data
+                </button>
             </form>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex space-x-3">
+            <a href="{{ route('master.mahasiswa.create') }}" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center">
+                <i class="fas fa-plus mr-2"></i> Tambah Data
+            </a>
         </div>
     </div>
 
-    <div class="row mt-3">
-        <div class="col-12">
-            <div class="card radius-15">
-                <div class="card-body">
-                    <div class="card-title">
-                        <h4 class="mb-0">List Mahasiswa</h4>
-                    </div>
-                    <hr>
-                    <div class="table-responsive">
-                        <table id="table-utama" class="table table-sm table-striped table-bordered table-hover"
-                            style="width:100%">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th>No</th>
-                                    <th>NIM</th>
-                                    <th>Nama Mahasiswa</th>
-                                    <th>Kelas</th>
-                                    <th>Semester</th>
-                                    <th>Prodi</th>
-                                    <th>Jumlah Terlambat (Menit)</th>
-                                    <th>Jumlah Alfa (Menit)</th>
-                                    <th>Total</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @php
-                                $totalData = count($dataMahasiswa);
-                                @endphp
-                                @foreach ($dataMahasiswa as $nomor => $value)
-                                <tr>
-                                    <td>{{ $totalData - $nomor }}</td>
-                                    <td>{{ $value['kode_user'] }}</td>
-                                    <td>{{ $value['nama_user'] }}</td>
-                                    <td>{{ $value['kelas'] }}</td>
-                                    <td>{{ $value['semester'] }}</td>
-                                    <td>{{ $value['prodi'] }}</td>
-                                    <td>{{ $value['jumlah_terlambat'] }}</td>
-                                    <td>{{ $value['jumlah_alfa'] }}</td>
-                                    <td>{{ $value['total'] }}</td>
-                                    <td>
-                                        <a class="btn btn-warning btn-sm m-1"
-                                            href="{{ route('master.mahasiswa.edit', ['id_mahasiswa' => $value->id_mahasiswa]) }}">
-                                            <i class="bx bx-edit"></i> Edit
-                                        </a>
-                                        <button class="btn btn-danger btn-sm m-1" data-bs-toggle="modal"
-                                            data-bs-target="#alertConfirm{{ $value['id_mahasiswa'] }}">
-                                            <i class="bx bx-trash"></i> Hapus
-                                        </button>
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="alertConfirm{{ $value['id_mahasiswa'] }}"
-                                            aria-hidden="true">
-                                            <div class="modal-dialog modal-lg">
-                                                <div class="modal-content bg-white">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Apakah Anda yakin akan menghapus data?
-                                                        </h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Batal</button>
-                                                        <a href="{{ route('mahasiswa.delete.proses', ['id_mahasiswa' => $value['id_mahasiswa']]) }}"
-                                                            class="btn btn-danger">Hapus</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Table -->
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <table class="w-full text-sm text-left text-gray-600 table-hover">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                <tr>
+                    <th class="px-6 py-3">No</th>
+                    <th class="px-6 py-3">NIM</th>
+                    <th class="px-6 py-3">Nama Mahasiswa</th>
+                    <th class="px-6 py-3">Email</th>
+                    <th class="px-6 py-3">Kelas</th>
+                    <th class="px-6 py-3">Semester</th>
+                    <th class="px-6 py-3">Prodi</th>
+                    <th class="px-6 py-3">Jumlah Terlambat (Menit)</th>
+                    <th class="px-6 py-3">Jumlah Alfa (Menit)</th>
+                    <th class="px-6 py-3">Total</th>
+                    <th class="px-6 py-3 text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                $totalData = count($dataMahasiswa);
+                @endphp
+                @foreach ($dataMahasiswa as $nomor => $value)
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-6 py-4">{{ $totalData - $nomor }}</td>
+                    <td class="px-6 py-4">{{ $value['kode_user'] }}</td>
+                    <td class="px-6 py-4">{{ $value['nama_user'] }}</td>
+                    <td class="px-6 py-4">{{ $value['email'] }}</td>
+                    <td class="px-6 py-4">{{ $value['kelas'] }}</td>
+                    <td class="px-6 py-4">{{ $value['semester'] }}</td>
+                    <td class="px-6 py-4">{{ $value['prodi'] }}</td>
+                    <td class="px-6 py-4">{{ $value['jumlah_terlambat'] }}</td>
+                    <td class="px-6 py-4">{{ $value['jumlah_alfa'] }}</td>
+                    <td class="px-6 py-4">{{ $value['total'] }}</td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex justify-center items-center space-x-2">
+                            <a href="{{ route('master.mahasiswa.edit', ['id_mahasiswa' => $value->id_mahasiswa]) }}" 
+                               class="inline-flex items-center px-3 py-1 border border-emerald-500 text-emerald-600 rounded-md hover:bg-emerald-50 transition-colors duration-200">
+                                <i class="fas fa-edit mr-1"></i>
+                                Edit
+                            </a>
+                            <a href="{{ route('mahasiswa.delete.proses', ['id_mahasiswa' => $value['id_mahasiswa']]) }}" 
+                               class="inline-flex items-center px-3 py-1 border border-red-500 text-red-600 rounded-md hover:bg-red-50 transition-colors duration-200">
+                                <i class="fas fa-trash mr-1"></i>
+                                Hapus
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                @endforeach
+                @if(count($dataMahasiswa) === 0)
+                <tr>
+                    <td colspan="11" class="px-6 py-4 text-center text-gray-500">Tidak ada data mahasiswa</td>
+                </tr>
+                @endif
+            </tbody>
+        </table>
     </div>
 </div>
 @endsection
 
 @section('js-content')
 <script>
-    $(document).ready(function() {
-        $('#table-utama').DataTable({
-            dom: 'Bfrtip',
-            buttons: [
-                {
-                    extend: 'excelHtml5',
-                    exportOptions: {
-                        columns: ':not(:last-child)' // Ekspor semua kolom kecuali kolom terakhir (Aksi)
-                    }
-                },
-                {
-                    extend: 'pdfHtml5',
-                    exportOptions: {
-                        columns: ':not(:last-child)' // Ekspor semua kolom kecuali kolom terakhir (Aksi)
-                    }
-                }
-            ],
-            order: [[0, 'desc']] // Sort by the first column (No)
-        });
-        // SweetAlert for import confirmation
-        $('#importButton').click(function() {
-            Swal.fire({
-                title: 'Apakah Anda yakin untuk mengimport data ini?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Import',
-                cancelButtonText: 'Batal',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $('#importForm').submit(); // Submit the form if confirmed
-                }
-            });
-        });
-    });
+    // Add your JavaScript here if needed
 </script>
 
 @if (Session::has('alert-success'))
@@ -185,7 +146,4 @@
     });
 </script>
 @endif
-@endsection
-
-@section('css-content')
 @endsection

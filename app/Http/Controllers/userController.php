@@ -79,6 +79,7 @@ class userController extends Controller
     {
         // -- ambil dari request id
         $form_id_user = $request->query('id_user', '');
+        
 
         $dataUser = MUser::findOrFail($form_id_user);
 

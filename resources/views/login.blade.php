@@ -1,92 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sikompen Teknik Informatika PNJ</title>
     <!--favicon-->
     <link rel="icon" href="{{ asset('assets/images/favicon-32x32.png')}}" type="image/png" />
     <!-- loader-->
     <link href="{{ asset('assets/css/pace.min.css')}}" rel="stylesheet" />
     <script src="{{ asset('assets/js/pace.min.js')}}"></script>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css')}}" />
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&family=Roboto&display=swap" />
-    <!-- Icons CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/css/icons.css')}}" />
-    <!-- App CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/css/app.css')}}" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .animated-gradient {
+            background: linear-gradient(-45deg, #064e3b, #10b981);
+            background-size: 200% 200%;
+            animation: gradient 15s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translate(0, 0px); }
+            50% { transform: translate(0, 15px); }
+            100% { transform: translate(0, -0px); }
+        }
+    </style>
 </head>
 
-<body class="bg-login">
-    <!-- wrapper -->
-    <div class="wrapper">
-        <div class="section-authentication-login d-flex align-items-center justify-content-center">
-            <div class="row">
-                <div class="col-12 col-lg-8 mx-auto">
-                    <div class="card radius-15">
-                        <div class="row no-gutters">
-                            <div class="col-lg-6">
-                                <img src="{{ asset('assets/images/login-images/6325230.jpg')}}"
-                                    class="card-img login-img h-100" alt="..." />
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="card-body p-md-5">
-                                    <div class="text-center">
-                                        <img src="{{ asset('assets/images/Logo_Politeknik_Negeri_Jakarta-removebg-preview.png')}}"
-                                            width="150" alt="" />
-                                        <h3 class="mt-4 font-weight-bold">Login</h3>
-                                    </div>
-                                    <div class="form-body">
-                                        <form class="row g-5" action="{{ route('login') }}" method="POST">
-                                            @csrf
-                                            <div class="col-12">
-                                                <label for="kode_user" class="form-label">NIP</label>
-                                                <input name="kode_user" type="text" class="form-control" id="kode_user"
-                                                    placeholder="Masukkan NIP" />
-                                            </div>
-                                            <div class="col-12">
-                                                <label for="inputChoosePassword" class="form-label">Password</label>
-                                                <div class="input-group" id="show_hide_password">
-                                                    <input name="password" type="password"
-                                                        class="form-control border-end-0" id="password" value=""
-                                                        placeholder="Masukkan Password" />
-                                                    <a href="javascript:;" class="input-group-text bg-transparent"><i
-                                                            class="bx bx-hide"></i></a>
-                                                </div>
-                                            </div>
-                                            <div class="col-15">
-                                                <div class="d-grid">
-                                                    <button type="submit"
-                                                        class="btn btn-success btn-md lis-rounded-circle-50 px-4 mx-1 my-1 btn-admin-gudang"
-                                                        style="background-color: #2c3e50;">
-                                                        <i class="fa fa-shopping-cart pl-2"> <i
-                                                                class="bx bxs-lock-open"></i>Login
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="col-15 text-center">
-                                                <a href="{{ route('forgetPasswordUser') }}"
-                                                    class="text-decoration-underline">Lupa Password?</a>
-                                                <br>
-                                                <br>
-                                                {{-- <a href="/"><i class="bx bxs-chevron-left"></i> Kembali</a> --}}
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!--end row-->
-                    </div>
-                </div>
-            </div>
+<body class="animated-gradient min-h-screen flex items-center justify-center p-4">
+    <!-- Animated Background -->
+    <div class="fixed inset-0 -z-10 overflow-hidden">
+        <div class="absolute -top-1/2 -left-1/2 w-full h-full floating opacity-30">
+            <div class="absolute w-72 h-72 bg-emerald-600 rounded-full filter blur-3xl"></div>
+        </div>
+        <div class="absolute -bottom-1/2 -right-1/2 w-full h-full floating opacity-30" style="animation-delay: -2s;">
+            <div class="absolute w-72 h-72 bg-green-800 rounded-full filter blur-3xl"></div>
         </div>
     </div>
-    <!-- end wrapper -->
+
+    <!-- Main Container -->
+    <div class="w-full max-w-4xl flex rounded-xl shadow-2xl overflow-hidden">
+        <!-- Left Side - Image -->
+        <div class="hidden lg:block w-1/2 relative bg-white bg-opacity-10">
+            <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+            <img src="{{ asset('assets/images/login-images/Admin.jpg')}}" alt="Login Illustration" class="w-full h-full object-cover">
+        </div>
+
+        <!-- Right Side - Login Form -->
+        <div class="w-full lg:w-1/2 glass-effect p-6">
+            <!-- Logo and Title -->
+            <div class="text-center mb-6">
+                <div class="mx-auto mb-3">
+                    <img src="{{ asset('assets/images/login-images/logoPNJ.png')}}" alt="Logo" class="w-20 h-20 object-contain mx-auto">
+                </div>
+                <h1 class="text-2xl font-bold text-white mb-1">Login</h1>
+                <p class="text-gray-200 text-sm">Masukkan kredensial Anda</p>
+            </div>
+
+            <!-- Login Form -->
+            <form method="POST" action="{{ route('login') }}" class="space-y-4">
+                @csrf
+                
+                <!-- NIP Input -->
+                <div class="space-y-1">
+                    <label for="kode_user" class="block text-sm font-medium text-white">
+                        <i class="fas fa-id-card mr-2"></i>NIP
+                    </label>
+                    <div class="relative">
+                        <input type="text" id="kode_user" name="kode_user" required
+                            class="w-full px-3 py-2 bg-white bg-opacity-20 border border-emerald-300 text-white placeholder-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition duration-200"
+                            placeholder="Masukkan NIP">
+                    </div>
+                </div>
+
+                <!-- Password Input -->
+                <div class="space-y-1">
+                    <label for="password" class="block text-sm font-medium text-white">
+                        <i class="fas fa-lock mr-2"></i>Password
+                    </label>
+                    <div class="relative" id="show_hide_password">
+                        <input type="password" id="password" name="password" required
+                            class="w-full px-3 py-2 bg-white bg-opacity-20 border border-emerald-300 text-white placeholder-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition duration-200"
+                            placeholder="Masukkan password">
+                        <a href="javascript:;" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-300 hover:text-white transition duration-200">
+                            <i class="bx bx-hide"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit"
+                    class="w-full bg-white text-emerald-700 py-2.5 rounded-lg font-semibold shadow-lg hover:bg-gray-100 transition duration-200">
+                    <i class="bx bxs-lock-open mr-2"></i>Login
+                </button>
+                
+                <!-- Forgot Password -->
+                <div class="text-center mt-4">
+                    <a href="{{ route('forgetPasswordUser') }}" class="text-gray-200 hover:text-white text-sm transition duration-200">
+                        Lupa Password?
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!--plugins-->
     <script src="{{ asset('assets/js/jquery.min.js')}}"></script>
@@ -188,7 +228,5 @@
             });
     </script>
     @endif
-
 </body>
-
 </html>

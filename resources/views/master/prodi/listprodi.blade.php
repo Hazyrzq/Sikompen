@@ -1,9 +1,11 @@
 @extends('super.master-layout')
 
 @section('custom-css')
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <style>
-    .hidden-column {
-        display: none;
+    .table-hover tbody tr:hover {
+        background-color: rgba(16, 185, 129, 0.05);
+        transition: background-color 0.3s ease;
     }
 </style>
 @endsection
@@ -11,92 +13,80 @@
 @section('title', 'List Prodi')
 
 @section('content')
-<div class="container-fluid mt-4">
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <form action="{{ route('master.prodi.import') }}" method="POST" enctype="multipart/form-data">
+@include('super.SidebarAdmin')
+
+<!-- Content -->
+<div class="container mx-auto px-4 sm:px-6 mt-6">
+    <!-- Import and Add Button -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div class="w-full md:w-1/2">
+            <form action="{{ route('master.prodi.import') }}" method="POST" enctype="multipart/form-data" class="bg-white p-4 rounded-lg shadow-md">
                 @csrf
                 <div class="mb-3">
-                    <label for="file" class="form-label">Import Data Prodi dari Excel:</label>
-                    <input type="file" class="form-control" id="file" name="file" required>
+                    <label for="file" class="block text-sm font-medium text-gray-700 mb-1">Import Data Prodi dari Excel:</label>
+                    <div class="flex space-x-2">
+                        <input type="file" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 border border-gray-300 rounded-lg" id="file" name="file" required>
+                        <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors">
+                            Import
+                        </button>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Import</button>
             </form>
         </div>
-        <div class="col-md-6 text-end">
-            <a href="{{ route('master.prodi.create') }}" class="btn btn-primary">Tambah Data</a>
+        <div class="flex justify-end">
+            <a href="{{ route('master.prodi.create') }}" class="flex items-center px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i> Tambah Data
+            </a>
         </div>
     </div>
 
-    <div class="row mt-3">
-        <div class="col-12">
-            <div class="card radius-15">
-                <div class="card-body">
-                    <div class="card-title">
-                        <h4 class="mb-0">List Prodi</h4>
-                    </div>
-                    <hr>
+    <!-- Table -->
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h4 class="text-lg font-semibold text-gray-800">List Prodi</h4>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-600 table-hover">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                    <tr>
+                        <th class="px-6 py-3">No</th>
+                        <th class="px-6 py-3">Prodi</th>
+                        <th class="px-6 py-3 text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                    $totalData = count($dataProdi);
+                    @endphp
+                    @foreach ($dataProdi as $nomor => $value)
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-6 py-4">{{ $totalData - $nomor }}</td>
+                        <td class="px-6 py-4 font-medium text-gray-900">
+                            {{ $value['prodi'] }}
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <a href="{{ route('master.prodi.edit', ['id_prodi' => $value->id_prodi]) }}" class="text-amber-600 hover:text-amber-800 mx-1">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <button class="text-red-600 hover:text-red-800 mx-1" data-bs-toggle="modal" data-bs-target="#alertConfirm{{ $value->id_prodi }}">
+                                <i class="fas fa-trash"></i> Hapus
+                            </button>
+                        </td>
+                    </tr>
 
-                    <div class="table-responsive">
-                        <table id="table-utama" class="table table-sm table-striped table-bordered table-hover"
-                            style="width:100%">
-                            <thead class="th-dark">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Prodi</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @php
-                                $totalData = count($dataProdi);
-                                @endphp
-                                @foreach ($dataProdi as $nomor => $value)
-                                <tr>
-                                    <td>{{ $totalData - $nomor }}</td>
-                                    <td>{{ $value['prodi'] }}</td>
-                                    <td>
-                                        <a href="{{ route('master.prodi.edit', ['id_prodi' => $value->id_prodi]) }}"
-                                            class="btn btn-warning btn-sm m-1">
-                                            <i class="bx bx-edit"></i> Edit
-                                        </a>
+                  
+                    <!-- End Modal Konfirmasi Hapus -->
+                    @endforeach
 
-                                        <button class="btn btn-danger btn-sm m-1" data-bs-toggle="modal"
-                                            data-bs-target="#alertConfirm{{ $value->id_prodi }}">
-                                            <i class="bx bx-trash"></i> Hapus
-                                        </button>
-
-                                        <!-- Modal Konfirmasi Hapus -->
-                                        <div class="modal fade" id="alertConfirm{{ $value->id_prodi }}" tabindex="-1"
-                                            aria-labelledby="alertConfirmLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-lg">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Konfirmasi Hapus Data</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        Apakah Anda yakin akan menghapus data prodi ini?
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Batal</button>
-                                                        <a href="{{ route('prodi.delete.proses', ['id_prodi' => $value->id_prodi]) }}"
-                                                            class="btn btn-danger">Hapus</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- End Modal Konfirmasi Hapus -->
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+                    @if(count($dataProdi) == 0)
+                    <tr>
+                        <td colspan="3" class="text-center py-4 text-gray-500">
+                            Tidak ada data prodi
+                        </td>
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -153,8 +143,4 @@
     });
 </script>
 @endif
-
-@endsection
-
-@section('css-content')
 @endsection

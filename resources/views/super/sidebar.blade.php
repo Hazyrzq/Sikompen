@@ -1,191 +1,134 @@
-<!-- wrapper -->
-<div class="wrapper">
-    <!--sidebar-wrapper-->
-    <div class="sidebar-wrapper" data-simplebar="true">
-        <div class="sidebar-header">
-            <div class="">
-                <img src="{{asset('assets/images/logo_pnj.png')}}" class="logo-icon-2" alt="logo" />
-            </div>
-            <div>
-                <h4 style="color: #ecf0f1" class="logo-text">SiKompen</h4>
-            </div>
-            <a href="javascript:;" class="toggle-btn ml-auto"> <i class="bx bx-menu"></i>
-            </a>
+<!-- Sidebar -->
+<div id="sidebar" class="fixed left-0 top-16 bottom-0 w-64 bg-white shadow-lg z-30 transform transition-transform duration-300">
+    <div class="overflow-y-auto h-full">
+        <div class="p-4">
+            <ul>
+                <li class="mb-2">
+                    <a href="{{ route('master.dashboard') }}" 
+                       class="group py-3 px-4 rounded-lg flex items-center space-x-3 {{ request()->routeIs('master.dashboard') ? 'bg-emerald-50 text-emerald-600' : 'text-gray-700 hover:bg-gray-50' }} transition-all duration-200">
+                        <i class="fas fa-tachometer-alt w-5 h-5 text-{{ request()->routeIs('master.dashboard') ? 'emerald-500' : 'gray-500 group-hover:text-emerald-500' }} transition-colors duration-200"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                
+                <li class="mb-2">
+                    <a href="{{ route('master.pekerjaan.listpekerjaan') }}" 
+                       class="group py-3 px-4 rounded-lg flex items-center space-x-3 {{ request()->routeIs('master.pekerjaan.*') ? 'bg-emerald-50 text-emerald-600' : 'text-gray-700 hover:bg-gray-50' }} transition-all duration-200">
+                        <i class="fas fa-briefcase w-5 h-5 text-{{ request()->routeIs('master.pekerjaan.*') ? 'emerald-500' : 'gray-500 group-hover:text-emerald-500' }} transition-colors duration-200"></i>
+                        <span>Pekerjaan</span>
+                    </a>
+                </li>
+                
+                <li class="mb-2">
+                    <a href="{{ route('master.mahasiswa.listmahasiswa') }}" 
+                       class="group py-3 px-4 rounded-lg flex items-center space-x-3 {{ request()->routeIs('master.mahasiswa.*') ? 'bg-emerald-50 text-emerald-600' : 'text-gray-700 hover:bg-gray-50' }} transition-all duration-200">
+                        <i class="fas fa-users w-5 h-5 text-{{ request()->routeIs('master.mahasiswa.*') ? 'emerald-500' : 'gray-500 group-hover:text-emerald-500' }} transition-colors duration-200"></i>
+                        <span>Mahasiswa</span>
+                    </a>
+                </li>
+                
+                <li class="mb-2">
+                    <a href="{{ route('master.user.listuser') }}" 
+                       class="group py-3 px-4 rounded-lg flex items-center space-x-3 {{ request()->routeIs('master.user.*') ? 'bg-emerald-50 text-emerald-600' : 'text-gray-700 hover:bg-gray-50' }} transition-all duration-200">
+                        <i class="fas fa-user-circle w-5 h-5 text-{{ request()->routeIs('master.user.*') ? 'emerald-500' : 'gray-500 group-hover:text-emerald-500' }} transition-colors duration-200"></i>
+                        <span>Pengelola</span>
+                    </a>
+                </li>
+                
+                <li class="mb-2">
+                    <a href="{{ route('master.setup.listsetup') }}" 
+                       class="group py-3 px-4 rounded-lg flex items-center space-x-3 {{ request()->routeIs('master.setup.*') ? 'bg-emerald-50 text-emerald-600' : 'text-gray-700 hover:bg-gray-50' }} transition-all duration-200">
+                        <i class="fas fa-cog w-5 h-5 text-{{ request()->routeIs('master.setup.*') ? 'emerald-500' : 'gray-500 group-hover:text-emerald-500' }} transition-colors duration-200"></i>
+                        <span>Setup</span>
+                    </a>
+                </li>
+            </ul>
         </div>
-        <!--navigation-->
-        <ul class="metismenu" id="menu">
-
-            @if (auth()->guard('pengguna')->user()->role == 'Admin Prodi')
-            <li>
-                <a href="{{ route('master.dashboard') }}">
-                    <div class="parent-icon icon-color-1"><i class="bx bx-home-alt"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Dashboard</div>
-                </a>
-            </li>
-            <li class="menu-label" style="color: #ecf0f1">Menu Admin Prodi</li>
-            <li>
-                <a href="{{ route('master.pekerjaan.listpekerjaan') }}">
-                    <div class="parent-icon icon-color-4"><i class="bx bx-briefcase"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Menu Pekerjaan</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('master.user.listuser') }}">
-                    <div class="parent-icon icon-color-4"><i class="bx bx-user"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Menu User</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('master.mahasiswa.listmahasiswa') }}">
-                    <div class="parent-icon icon-color-4"><i class="bx bx-book"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Menu Mahasiswa</div>
-                </a>
-            </li>
-            {{-- <li>
-                <a href="{{ route('master.kelas.listkelas') }}">
-                    <div class="parent-icon icon-color-4"><i class="bx bx-group"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Menu Kelas</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('master.prodi.listprodi') }}">
-                    <div class="parent-icon icon-color-4"><i class="bx bx-building"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Menu Prodi</div>
-                </a>
-            </li> --}}
-            <li>
-                <a href="{{ route('master.setup.listsetup') }}">
-                    <div class="parent-icon icon-color-4"><i class="bx bx-cog"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Menu Setup Bertugas</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('master.pengajuan.listpengajuan') }}">
-                    <div class="parent-icon icon-color-4"><i class="bx bx-file"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Menu Pengajuan</div>
-                </a>
-            </li>
-            @endif
-            @if (auth()->guard('pengguna')->user()->role == 'Pengawas')
-            <li class="menu-label" style="color: #ecf0f1">Menu Pengawas</li>
-            <li>
-                <a href="{{ route('pengawas.listpengajuan') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-file"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Daftar Pengajuan</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('pengawas.listdisetujui') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-check"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Daftar Disetujui</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('master.pekerjaan.listpekerjaan') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-briefcase"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Menu Pekerjaan</div>
-                </a>
-            </li>
-            @endif
-            @if (auth()->guard('pengguna')->user()->role == 'Kepala Lab')
-            <li class="menu-label" style="color: #ecf0f1">Menu Kepala Lab</li>
-            <li>
-                <a href="{{ route('kalab.listpengajuan') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-file"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Daftar Pengajuan</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('kalab.listdisetujui') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-check"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Daftar Disetujui</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('kalab.paksa.listpengajuan') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-list-ul"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Daftar Semua Pengajuan(Untuk Pengajuan Paksa)</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('master.pekerjaan.listpekerjaan') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-briefcase"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Menu Pekerjaan</div>
-                </a>
-            </li>
-            @endif
-            @if (auth()->guard('pengguna')->user()->role == 'PLP')
-            <li class="menu-label" style="color: #ecf0f1">Menu PLP</li>
-            <li>
-                <a href="{{ route('plp.listpengajuan') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-file"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Daftar Pengajuan</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('plp.listdisetujui') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-check"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Daftar Disetujui</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('plp.paksa.listpengajuan') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-list-ul"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Daftar Semua Pengajuan(Untuk Pengajuan Paksa)</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('master.pekerjaan.listpekerjaan') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-briefcase"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Menu Pekerjaan</div>
-                </a>
-            </li>
-            @endif
-            @if (auth()->guard('pengguna')->user()->role == 'Dosen Pembimbing Akademik')
-            <li class="menu-label" style="color: #ecf0f1">Menu Dosen Pembimbing Akademik</li>
-            <li>
-                <a href="{{ route('dospem.listbebas') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-book"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Daftar Form Bebas Kompen</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('dospem.listpengajuan') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-book"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Daftar Semua Pengajuan Kompen</div>
-                </a>
-            </li>
-            @endif
-            @if (auth()->guard('pengguna')->user()->role == 'KPS')
-            <li class="menu-label" style="color: #ecf0f1">Menu KPS</li>
-            <li>
-                <a href="{{ route('kps.listmahasiswa') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-user"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Daftar Mahasiswa</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('kps.listpengajuan') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-book"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Daftar Semua Pengajuan Kompen</div>
-                </a>
-            </li>
-            @endif
-            @if (auth()->guard('pengguna')->user()->role == 'Kajur')
-            <li class="menu-label" style="color: #ecf0f1">Menu Kajur</li>
-            <li>
-                <a href="{{ route('kajur.listmahasiswa') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-user"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Daftar Mahasiswa</div>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('kajur.listpengajuan') }}">
-                    <div class="parent-icon icon-color-2"><i class="bx bx-book"></i></div>
-                    <div class="menu-title" style="color: #ecf0f1">Daftar Semua Pengajuan Kompen</div>
-                </a>
-            </li>
-            @endif
-        </ul>
     </div>
 </div>
+
+<!-- Overlay for sidebar -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black opacity-0 pointer-events-none transition-opacity duration-300 z-20"></div>
+
+<script>
+    // Sidebar Toggle Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        
+        if (sidebarToggle && sidebar && mainContent) {
+            // Set initial state based on screen size
+            let isSidebarOpen = window.innerWidth >= 768;
+            updateSidebarState();
+
+            // Toggle sidebar when button is clicked
+            sidebarToggle.addEventListener('click', function() {
+                isSidebarOpen = !isSidebarOpen;
+                updateSidebarState();
+            });
+            
+            // Close sidebar when clicking on overlay
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', function() {
+                    isSidebarOpen = false;
+                    updateSidebarState();
+                });
+            }
+
+            // Update sidebar state on window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth < 768 && isSidebarOpen) {
+                    sidebarOverlay.classList.add('opacity-50');
+                    sidebarOverlay.classList.remove('pointer-events-none');
+                } else if (window.innerWidth >= 768) {
+                    sidebarOverlay.classList.remove('opacity-50');
+                    sidebarOverlay.classList.add('pointer-events-none');
+                }
+            });
+
+            // Function to update sidebar state
+            function updateSidebarState() {
+                if (isSidebarOpen) {
+                    // Open sidebar
+                    sidebar.style.transform = 'translateX(0)';
+                    mainContent.classList.remove('ml-0');
+                    mainContent.classList.add('ml-64');
+                    
+                    // On mobile, show overlay
+                    if (window.innerWidth < 768) {
+                        sidebarOverlay.classList.remove('pointer-events-none');
+                        sidebarOverlay.classList.add('opacity-50');
+                    }
+                } else {
+                    // Close sidebar
+                    sidebar.style.transform = 'translateX(-100%)';
+                    mainContent.classList.remove('ml-64');
+                    mainContent.classList.add('ml-0');
+                    
+                    // Hide overlay
+                    sidebarOverlay.classList.add('pointer-events-none');
+                    sidebarOverlay.classList.remove('opacity-50');
+                }
+            }
+        }
+    });
+
+    // Handle Escape key to close sidebar
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            
+            if (sidebar && getComputedStyle(sidebar).transform !== 'matrix(1, 0, 0, 1, -256, 0)') {
+                sidebar.style.transform = 'translateX(-100%)';
+                mainContent.classList.remove('ml-64');
+                mainContent.classList.add('ml-0');
+                sidebarOverlay.classList.add('pointer-events-none');
+                sidebarOverlay.classList.remove('opacity-50');
+            }
+        }
+    });
+</script>

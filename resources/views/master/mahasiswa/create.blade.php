@@ -1,186 +1,259 @@
 @extends('super.master-layout')
+
 @section('custom-css')
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .form-input {
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            border-color: rgba(16, 185, 129, 0.7);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .tooltip {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            display: none;
+        }
+
+        .info-icon {
+            cursor: pointer;
+            color: #10b981;
+            margin-left: 5px;
+        }
+
+        .info-icon:hover+.tooltip {
+            display: block;
+        }
+    </style>
 @endsection
 
-@section('title')
-@section('content')
+@section('title', 'Tambah Mahasiswa')
 
-<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-    <div class="breadcrumb-title pe-3">Tambah Mahasiswa</div>
-    <div class="ps-3">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0 p-0">
-                <li class="breadcrumb-item"><a href=""><i class="bx bx-home-alt"></i></a></li>
-                <li class="breadcrumb-item" aria-current="page">
-                    <a href="{{ route('master.mahasiswa.listmahasiswa') }}">List Mahasiswa</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">Tambah</li>
-            </ol>
-        </nav>
-    </div>
-</div>
-<div class="container">
-    <div class="row">
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title">
-                    <h4 class="mb-0">Tambah Mahasiswa</h4>
-                </div>
-                <hr>
-                <form id="job-form" method="POST" action="{{ route('mahasiswa.add.proses') }}"
-                    enctype="multipart/form-data">
+@section('content')
+    <div class="container mx-auto px-4 sm:px-6 mt-6">
+        <div class="bg-white shadow-md rounded-lg overflow-hidden max-w-2xl mx-auto">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Tambah Data Mahasiswa</h2>
+
+                <form action="{{ route('mahasiswa.add.proses') }}" method="POST" class="space-y-4">
                     @csrf
 
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <label class="form-label">NIM:</label>
-                            <input class="form-control form-control-sm select-element" type="text" name="kode_user"
-                                id="kode_user" placeholder="Masukkan Nim" required>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="kode_user" class="block text-sm font-medium text-gray-700 mb-2">NIM</label>
+                            <input type="text" name="kode_user" id="kode_user" required
+                                class="form-input w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label for="nama_user" class="block text-sm font-medium text-gray-700 mb-2">Nama
+                                Mahasiswa</label>
+                            <input type="text" name="nama_user" id="nama_user" required
+                                class="form-input w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none">
                         </div>
                     </div>
-                    <div class="row mb-3">
-                        <div class="mb-3">
-                            <label class="form-label">Nama Mahasiswa</label>
-                            <input type="text" class="form-control form-control-sm select-element" id="nama_mahasiswa"
-                                name="nama_mahasiswa" required>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" name="email" id="email" required
+                                class="form-input w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label for="notelp" class="block text-sm font-medium text-gray-700 mb-2">Nomor Telepon
+                                (Opsional)</label>
+                            <input type="text" name="notelp" id="notelp"
+                                class="form-input w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none">
                         </div>
                     </div>
-                    <div class="row mb-3">
-                        <div class="mb-3">
-                            <label class="form-label">Jumlah Terlambat (menit)</label>
-                            <input type="text" class="form-control form-control-sm select-element" id="jumlah_terlambat"
-                                name="jumlah_terlambat" required>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="prodi" class="block text-sm font-medium text-gray-700 mb-2">Program Studi</label>
+                            <select name="prodi" id="prodi" required
+                                class="form-input w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none">
+                                <option value="">Pilih Program Studi</option>
+                                @foreach($prodi as $p)
+                                    <option value="{{ $p->prodi }}">{{ $p->prodi }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="mb-3">
-                            <label class="form-label">Jumlah Alfa (jam)</label>
-                            <input type="text" class="form-control form-control-sm select-element" id="jumlah_alfa"
-                                name="jumlah_alfa" required>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="mb-3">
-                            <label class="form-label">Total</label>
-                            <input type="text" class="form-control form-control-sm select-element" id="total"
-                                name="total" required>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="mb-3">
-                            <label class="form-label">Pilih Pekerjaan</label>
-                            <select class="form-control form-control-sm select2" name="pekerjaan[]"
-                                id="pekerjaan-select" multiple required>
-                                @foreach($pekerjaanList as $pekerjaan)
-                                <option value="{{ $pekerjaan->kode_pekerjaan }}"
-                                    data-jam="{{ $pekerjaan->jam_pekerjaan }}">
-                                    {{ $pekerjaan->kode_pekerjaan }} - {{ $pekerjaan->nama_pekerjaan }}
-                                    (Jam: {{ $pekerjaan->jam_pekerjaan }})
-                                </option>
+
+                        <div>
+                            <label for="kelas" class="block text-sm font-medium text-gray-700 mb-2">Kelas</label>
+                            <select name="kelas" id="kelas" required
+                                class="form-input w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none">
+                                <option value="">Pilih Kelas</option>
+                                @foreach($kelas as $k)
+                                    <option value="{{ $k->kelas }}">{{ $k->kelas }}</option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
-                    <div class="row mb-3">
-                        <div class="mb-3">
-                            <label class="form-label">Perkiraan Sisa Jam</label>
-                            <input type="text" class="form-control form-control-sm" id="perkiraan-sisa-jam" readonly>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="semester" class="block text-sm font-medium text-gray-700 mb-2">Semester</label>
+                            <select name="semester" id="semester" required
+                                class="form-input w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none">
+                                <option value="">Pilih Semester</option>
+                                @for($i = 1; $i <= 8; $i++)
+                                    <option value="{{ $i }}">{{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="total" class="block text-sm font-medium text-gray-700 mb-2">
+                                Total Poin
+                                <i class="fas fa-info-circle text-emerald-500"
+                                    title="Perhitungan: Terlambat (menit x 2) + Alfa (jam x 60 x 2)"></i>
+                            </label>
+                            <input type="number" name="total" id="total" value="0" readonly
+                                class="form-input w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none bg-gray-100 cursor-not-allowed">
                         </div>
                     </div>
 
-                    <div class="row justify-content-left">
-                        <div class="col-8 text-left" style="margin-bottom: 10px; margin-left: 15px;">
-                            <button class="btn btn-primary" type="button" id="save-button"
-                                onclick="showConfirmation()">Simpan</button>
-                            <a href="{{ route('master.mahasiswa.listmahasiswa') }}" class="btn btn-secondary"
-                                style="margin-left: 10px;"><i class="bx bx-x me-1"></i>Batal</a>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="jumlah_terlambat" class="block text-sm font-medium text-gray-700 mb-2">
+                                Jumlah Terlambat (menit)
+                                <i class="fas fa-info-circle text-emerald-500"
+                                    title="Setiap menit terlambat dikalikan 2"></i>
+                            </label>
+                            <div class="relative">
+                                <input type="number" name="jumlah_terlambat" id="jumlah_terlambat" value="0" min="0"
+                                    step="1"
+                                    class="form-input w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none">
+                                <small class="text-gray-500 block mt-1">Poin Terlambat: <span
+                                        id="poin_terlambat">0</span></small>
+                            </div>
                         </div>
+
+                        <div>
+                            <label for="jumlah_alfa" class="block text-sm font-medium text-gray-700 mb-2">
+                                Jumlah Alfa (jam)
+                                <i class="fas fa-info-circle text-emerald-500" title="Setiap jam alfa dikalikan 60 x 2"></i>
+                            </label>
+                            <div class="relative">
+                                <input type="number" name="jumlah_alfa" id="jumlah_alfa" value="0" min="0" step="0.5"
+                                    class="form-input w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none">
+                                <small class="text-gray-500 block mt-1">Poin Alfa: <span id="poin_alfa">0</span></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex justify-end space-x-4">
+                        <a href="{{ route('master.mahasiswa.listmahasiswa') }}"
+                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                            Batal
+                        </a>
+                        <button type="submit"
+                            class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center">
+                            <i class="fas fa-save mr-2"></i> Simpan Data
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
-
 @endsection
 
 @section('js-content')
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2/dist/js/select2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
-<script>
-    $(document).ready(function() {
-        $('.select2').select2();
-
-        $('#pekerjaan-select').change(function() {
-            calculateRemainingHours();
-        });
-
-        function calculateRemainingHours() {
-            let total = parseInt($('#total').val());
-            let selectedJobs = $('#pekerjaan-select option:selected');
-            let totalJobHours = 0;
-
-            selectedJobs.each(function() {
-                totalJobHours += parseInt($(this).data('jam'));
-            });
-
-            let remainingHours = total - totalJobHours;
-            $('#perkiraan-sisa-jam').val(remainingHours);
-        }
-    });
-
-    function showConfirmation() {
-        let allSelects = document.querySelectorAll('.select-element');
-        let isValid = true;
-
-        allSelects.forEach(function(select) {
-            if (select.value === '') {
-                isValid = false;
-                return;
+    <script>
+        // Fungsi untuk menghitung total poin - versi robust
+        function calculateTotal() {
+            console.log("calculateTotal function called");
+            
+            // Ambil nilai terlambat (menit) dengan validasi tambahan
+            const terlambatInput = document.getElementById('jumlah_terlambat');
+            let terlambatMenit = 0;
+            if (terlambatInput && terlambatInput.value) {
+                terlambatMenit = parseFloat(terlambatInput.value) || 0;
             }
-        });
+            console.log("Terlambat menit:", terlambatMenit);
 
-        if (isValid) {
-            Swal.fire({
-                title: 'Apakah anda yakin akan menambah data ini?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Tambah',
-                cancelButtonText: 'Batal',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.querySelector('form').submit();
-                }
-            });
+            // Ambil nilai alfa (jam) dengan validasi tambahan
+            const alfaInput = document.getElementById('jumlah_alfa');
+            let alfaJam = 0;
+            if (alfaInput && alfaInput.value) {
+                alfaJam = parseFloat(alfaInput.value) || 0;
+            }
+            console.log("Alfa jam:", alfaJam);
+
+            // Hitung poin terlambat (menit * 2)
+            let terlambatPoin = terlambatMenit * 2;
+            console.log("Poin terlambat:", terlambatPoin);
+            
+            // Hitung poin alfa (jam ke menit * 2)
+            let alfaPoin = alfaJam * 60 * 2;
+            console.log("Poin alfa:", alfaPoin);
+            
+            // Hitung total poin
+            let totalPoin = terlambatPoin + alfaPoin;
+            console.log("Total poin:", totalPoin);
+            
+            // Set nilai total field
+            const totalField = document.getElementById('total');
+            if (totalField) {
+                totalField.value = Math.round(totalPoin);
+                console.log("Total field updated:", totalField.value);
+            }
+            
+            // Update tampilan poin terlambat
+            const poinTerlambatElement = document.getElementById('poin_terlambat');
+            if (poinTerlambatElement) {
+                poinTerlambatElement.textContent = Math.round(terlambatPoin);
+                console.log("Poin terlambat display updated:", poinTerlambatElement.textContent);
+            }
+            
+            // Update tampilan poin alfa
+            const poinAlfaElement = document.getElementById('poin_alfa');
+            if (poinAlfaElement) {
+                poinAlfaElement.textContent = Math.round(alfaPoin);
+                console.log("Poin alfa display updated:", poinAlfaElement.textContent);
+            }
+        }
+
+        // Fungsi untuk memastikan event listener terpasang dengan benar
+        function setupEventListeners() {
+            console.log("Setting up event listeners");
+            
+            const terlambatInput = document.getElementById('jumlah_terlambat');
+            const alfaInput = document.getElementById('jumlah_alfa');
+            
+            if (terlambatInput) {
+                console.log("Adding event listener to terlambat input");
+                terlambatInput.addEventListener('input', calculateTotal);
+                terlambatInput.addEventListener('change', calculateTotal);
+            }
+            
+            if (alfaInput) {
+                console.log("Adding event listener to alfa input");
+                alfaInput.addEventListener('input', calculateTotal);
+                alfaInput.addEventListener('change', calculateTotal);
+            }
+            
+            // Run calculation immediately
+            calculateTotal();
+        }
+
+        // Pastikan DOM selesai dimuat
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupEventListeners);
         } else {
-            Swal.fire({
-                title: 'Masih ada yang kosong!',
-                icon: 'error',
-            });
+            setupEventListeners();
         }
-    }
-</script>
-@if (Session::has('alert-error'))
-<script>
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    });
 
-    Toast.fire({
-        icon: 'error',
-        title: '{{ Session::get('alert-error') }}'
-    });
-</script>
-@endif
-
+        // Tambahan - coba jalankan setelah beberapa detik untuk menangani load script yang terlambat
+        setTimeout(calculateTotal, 500);
+    </script>
 @endsection

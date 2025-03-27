@@ -32,6 +32,8 @@ class dashboardController extends Controller
         // Counting total Setup Bertugas
         $totalSetup = MSetupBertugas::count();
 
+        
+
         return view('master.dashboard', [
             'totalUser' => $totalUser,
             'totalMahasiswa' => $totalMahasiswa,

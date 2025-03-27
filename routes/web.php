@@ -222,28 +222,3 @@ Route::middleware(['plp'])->group(function () {
     Route::put('/plp/paksa/edit/proses', [paksaPengajuanController::class, 'lanjutiPaksaPlpProses'])->name('plp.paksa.edit.proses');
 });
 
-//- [Menu Dosen Pembimbing Akademik] -- \\
-Route::middleware(['dospem'])->group(function () {
-    Route::get('/dospem/list/bebaskompen', [dospemController::class, 'dospemShowlist'])->name('dospem.listbebas');
-    Route::get('/dospem/showdetail/{id}', [dospemController::class, 'dospemShowDetail'])->name('dospem.detail');
-    Route::get('/dospem/listpengajuan', [dospemController::class, 'dospemPengajuanShowList'])->name('dospem.listpengajuan');
-    Route::get('/dospem/dospemPengajuanShowDetail/', [dospemController::class, 'dospemPengajuanShowDetail'])->name('dospem.lihatdetail');
-    Route::get('/dospem/generateChartDatal/', [dospemController::class, 'generateChartData'])->name('dospem.generateChartData');
-});
-
-//- [Menu KPS] -- \\
-Route::middleware(['kps'])->group(function () {
-    Route::get('/kps/listmahasiswa', [kpsController::class, 'kpsShowlist'])->name('kps.listmahasiswa');
-    Route::get('/kps/detail/{id}', [kpsController::class, 'kpsShowDetail'])->name('kps.detail');
-    Route::get('/kps/listpengajuan', [kpsController::class, 'kpsPengajuanShowList'])->name('kps.listpengajuan');
-    Route::get('/kps/kpsPengajuanShowDetail/', [kpsController::class, 'kpsPengajuanShowDetail'])->name('kps.lihatdetail');
-});
-
-//- [Menu Kajur] -- \\
-Route::middleware(['kajur'])->group(function () {
-    Route::get('/kajur/listmahasiswa', [kajurController::class, 'kajurShowlist'])->name('kajur.listmahasiswa');
-    Route::get('/kajur/detail/{id}', [kajurController::class, 'kajurShowDetail'])->name('kajur.detail');
-    Route::get('/kajur/listpengajuan', [kajurController::class, 'kajurPengajuanShowList'])->name('kajur.listpengajuan');
-    Route::get('/kajur/kajurPengajuanShowDetail/', [kajurController::class, 'kajurPengajuanShowDetail'])->name('kajur.lihatdetail');
-    Route::get('/kajur/generateChartDatal/', [kajurController::class, 'generateChartData'])->name('kajur.generateChartData');
-});

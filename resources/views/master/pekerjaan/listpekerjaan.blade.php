@@ -1,13 +1,11 @@
 @extends('super.master-layout')
 
 @section('custom-css')
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <style>
-    .hidden-column {
-        display: none;
-    }
-
-    .btn-space {
-        margin-right: 20px;
+    .table-hover tbody tr:hover {
+        background-color: rgba(16, 185, 129, 0.05);
+        transition: background-color 0.3s ease;
     }
 </style>
 @endsection
@@ -15,220 +13,67 @@
 @section('title', 'List Pekerjaan')
 
 @section('content')
-<div class="container-fluid mt-4">
-    <div class="row">
-        <div class="col-md-6 d-flex align-items-center">
-            <form id="importForm" action="{{ route('master.pekerjaan.import.proses') }}" method="POST"
-                enctype="multipart/form-data" class="d-flex align-items-center">
-                @csrf
-                <div class="input-group mb-3">
-                    <input type="file" class="form-control" name="excel_file">
-                    <button id="importButton" class="btn btn-primary btn-space btn-large" type="button">Import
-                        Data</button>
+@include('super.SidebarAdmin')
+
+
+<!-- Content -->
+<div class="container mx-auto px-4 sm:px-6 mt-6">
+    <!-- Search and Actions -->
+    <div class="flex justify-between items-center mb-6">
+        <div class="flex-1 max-w-lg">
+            <form action="{{ route('master.pekerjaan.listpekerjaan') }}" method="GET" class="flex space-x-3">
+                <div class="relative flex-1">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </span>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Search by kode pekerjaan"
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500">
                 </div>
+                
+                <button type="submit" class="bg-emerald-500 text-white px-4 py-2 rounded-lg hover:bg-emerald-600 transition-colors">
+                    Search
+                </button>
             </form>
         </div>
-        <div class="col-md-6 d-flex justify-content-end">
-            <a href="{{ route('master.pekerjaan.create') }}" class="btn btn-primary">Tambah Data</a>
-            <button id="delete-all-button" class="btn btn-danger">Delete Semua Pekerjaan</button>
-        </div>
     </div>
 
-    <div class="row mt-3">
-        <div class="col-12">
-            <div class="card radius-15">
-                <div class="card-body">
-                    <div class="card-title">
-                        <h4 class="mb-0">List Pekerjaan</h4>
-                    </div>
-                    <hr>
-
-                    <div class="table-responsive">
-                        <table id="table-utama" class="table table-sm table-striped table-bordered table-hover"
-                            style="width:100%">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Kode Pekerjaan</th>
-                                    <th>Nama Pekerjaan</th>
-                                    <th>Jam Pekerjaan (menit)</th>
-                                    <th>Limit Pekerja</th>
-                                    <th>Id PJ</th>
-                                    <th>Penanggung Jawab</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @php
-                                $totalData = count($dataPekerjaan);
-                                @endphp
-                                @foreach ($dataPekerjaan as $nomor => $value)
-                                <tr>
-                                    <td>{{ $totalData - $nomor }}</td>
-                                    <td>{{ $value['kode_pekerjaan'] }}</td>
-                                    <td class="text-wrap mw-100">{{ $value['nama_pekerjaan'] }}</td>
-                                    <td>{{ $value['jam_pekerjaan'] }}</td>
-                                    <td>{{ $value['batas_pekerja'] < 0 ? 0 : $value['batas_pekerja'] }}</td>
-                                    <td>{{ $value['id_penanggung_jawab'] }}</td>
-                                    <td>{{ $value['penanggung_jawab'] }}</td>
-                                    <td>
-                                        <a class="btn btn-warning btn-sm btn-space"
-                                            href="{{ route('master.pekerjaan.edit', ['id_pekerjaan' => $value['id_pekerjaan']]) }}">
-                                            <i class="bx bx-edit"></i> Edit
-                                        </a>
-
-                                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#alertConfirm{{ $value['id_pekerjaan'] }}">
-                                            <i class="bx bx-trash"></i> Hapus
-                                        </button>
-
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="alertConfirm{{ $value['id_pekerjaan'] }}"
-                                            aria-hidden="true">
-                                            <div class="modal-dialog modal-lg">
-                                                <div class="modal-content bg-white">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Apakah Anda yakin akan menghapus data?
-                                                        </h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Batal</button>
-                                                        <a href="{{ route('pekerjaan.delete.proses', ['id_pekerjaan' => $value['id_pekerjaan']]) }}"
-                                                            class="btn btn-danger">Hapus</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Table -->
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <table class="w-full text-sm text-left text-gray-600 table-hover">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                <tr>
+                    <th class="px-6 py-3">No</th>
+                    <th class="px-6 py-3">Kode Pekerjaan</th>
+                    <th class="px-6 py-3">Nama Pekerjaan</th>
+                    <th class="px-6 py-3">Jam Pekerjaan (menit)</th>
+                    <th class="px-6 py-3">Limit Pekerja</th>
+                    <th class="px-6 py-3">Penanggung Jawab</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($dataPekerjaan as $nomor => $pekerjaan)
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-6 py-4">{{ $loop->iteration }}</td>
+                    <td class="px-6 py-4 font-medium text-gray-900">
+                        {{ $pekerjaan['kode_pekerjaan'] }}
+                    </td>
+                    <td class="px-6 py-4">{{ $pekerjaan['nama_pekerjaan'] }}</td>
+                    <td class="px-6 py-4">{{ $pekerjaan['jam_pekerjaan'] }}</td>
+                    <td class="px-6 py-4">
+                        {{ max(0, $pekerjaan['batas_pekerja']) }}
+                    </td>
+                    <td class="px-6 py-4">{{ $pekerjaan['penanggung_jawab'] }}</td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-gray-500">
+                        Tidak ada data pekerjaan
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
-
-<!-- Modal for Delete All Confirmation -->
-<div class="modal fade" id="deleteAllModal" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content bg-white">
-            <div class="modal-header">
-                <h5 class="modal-title">Apakah Anda yakin akan menghapus semua data?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <a href="{{ route('master.pekerjaan.deleteAll.proses') }}" class="btn btn-danger">Hapus Semua</a>
-            </div>
-        </div>
-    </div>
-</div>
-@endsection
-
-@section('js-content')
-<!-- SweetAlert for Import Confirmation -->
-<script>
-    $(document).ready(function() {
-        // Initialize DataTables
-        $('#table-utama').DataTable({
-            dom: 'Bfrtip',
-            buttons: [
-                {
-                    extend: 'excelHtml5',
-                    exportOptions: {
-                        columns: ':not(:last-child)' // Exclude the last column (Aksi)
-                    }
-                },
-                {
-                    extend: 'pdfHtml5',
-                    exportOptions: {
-                        columns: ':not(:last-child)' // Exclude the last column (Aksi)
-                    }
-                }
-            ]
-        });
-
-        // SweetAlert for Import Confirmation
-        $('#importButton').click(function() {
-            Swal.fire({
-                title: 'Apakah Anda yakin akan mengimport data ini?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Import!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $('#importForm').submit(); // Submit the form if confirmed
-                }
-            });
-        });
-
-        // SweetAlert for Delete All Confirmation
-        $('#delete-all-button').click(function() {
-            Swal.fire({
-                title: 'Apakah Anda yakin akan menghapus semua data?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Hapus Semua!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $('#deleteAllModal').modal('show');
-                }
-            });
-        });
-    });
-</script>
-@if (Session::has('alert-success'))
-<script>
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    });
-
-    Toast.fire({
-        icon: 'success',
-        title: '{{ Session::get('alert-success') }}'
-    });
-</script>
-@endif
-
-@if (Session::has('alert-error'))
-<script>
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    });
-
-    Toast.fire({
-        icon: 'error',
-        title: '{{ Session::get('alert-error') }}'
-    });
-</script>
-@endif
 @endsection

@@ -1,132 +1,96 @@
 @extends('super.master-layout')
 
-@section('custom-css')
-@endsection
+@section('title', 'Dashboard')
 
-@section('title')
+@section('custom-css')
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+    * {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .dashboard-card {
+        transition: all 0.3s ease;
+        transform-origin: center;
+        border-radius: 12px;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: cardAppear 0.5s forwards;
+    }
+    
+    @keyframes cardAppear {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .dashboard-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    /* Mengatur margin konten agar sesuai dengan sidebar yang tertutup */
+    #mainContent {
+        margin-left: 4rem !important;
+        transition: margin-left 0.3s ease;
+    }
+</style>
 @endsection
 
 @section('content')
+<!-- Include sidebar di sini -->
+@include('super.SidebarAdmin')
 
-<div class="row">
-    <div class="col-20 col-lg-6">
-        <a href="{{ route('master.pekerjaan.listpekerjaan') }}">
-            <div class="card radius-15 bg-info mb-4">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h1 class="mb-0 text-white">{{ $totalPekerjaan }}</h1>
-                        </div>
-                        <div class="ms-auto font-30 text-info"><i class="bx bx-package text-white"></i></div>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h3 class="mb-0 text-white">Total Pekerjaan</h3>
-                        </div>
-                    </div>
-                </div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+    <!-- Total Pekerjaan Card -->
+    <a href="{{ route('master.pekerjaan.listpekerjaan') }}" class="dashboard-card" style="animation-delay: 0.1s">
+        <div class="bg-purple-600 text-white rounded-lg p-6 flex items-center justify-between">
+            <div>
+                <h2 class="text-4xl md:text-5xl font-bold mb-2">{{ $totalPekerjaan ?? '11' }}</h2>
+                <p class="text-xl md:text-2xl font-medium">Total Pekerjaan</p>
             </div>
-        </a>
-    </div>
+            <div class="bg-purple-500 bg-opacity-30 p-4 rounded-full">
+                <i class="fas fa-briefcase text-3xl"></i>
+            </div>
+        </div>
+    </a>
 
-    <div class="col-20 col-lg-6">
-        <a href="{{ route('master.mahasiswa.listmahasiswa') }}">
-            <div class="card radius-15 bg-warning mb-4">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h1 class="mb-0 text-white">{{ $totalMahasiswa }}</h1>
-                        </div>
-                        <div class="ms-auto font-30 text-warning"><i class="bx bx-user text-white"></i></div>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h3 class="mb-0 text-white">Total Mahasiswa</h3>
-                        </div>
-                    </div>
-                </div>
+    <!-- Total Mahasiswa Card -->
+    <a href="{{ route('master.mahasiswa.listmahasiswa') }}" class="dashboard-card" style="animation-delay: 0.2s">
+        <div class="bg-blue-600 text-white rounded-lg p-6 flex items-center justify-between">
+            <div>
+                <h2 class="text-4xl md:text-5xl font-bold mb-2">{{ $totalMahasiswa ?? '1' }}</h2>
+                <p class="text-xl md:text-2xl font-medium">Total Mahasiswa</p>
             </div>
-        </a>
-    </div>
-    <div class="col-20 col-lg-6">
-        <a href="{{ route('master.user.listuser') }}">
-            <div class="card radius-15 bg-secondary mb-4">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h1 class="mb-0 text-white">{{ $totalUser }}</h1>
-                        </div>
-                        <div class="ms-auto font-30 text-secondary"><i class="bx bx-user-circle text-white"></i></div>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h3 class="mb-0 text-white">Total User</h3>
-                        </div>
-                    </div>
-                </div>
+            <div class="bg-blue-500 bg-opacity-30 p-4 rounded-full">
+                <i class="fas fa-users text-3xl"></i>
             </div>
-        </a>
-    </div>
-    {{-- <div class="col-20 col-lg-6">
-        <a href="{{ route('master.kelas.listkelas') }}">
-            <div class="card radius-15 bg-success mb-4">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h1 class="mb-0 text-white">{{ $totalKelas }}</h1>
-                        </div>
-                        <div class="ms-auto font-30 text-success"><i class="bx bx-book-reader text-white"></i></div>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h3 class="mb-0 text-white">Total Kelas</h3>
-                        </div>
-                    </div>
-                </div>
+        </div>
+    </a>
+
+    <!-- Total Pengelola Card -->
+    <a href="{{ route('master.user.listuser') }}" class="dashboard-card" style="animation-delay: 0.3s">
+        <div class="bg-teal-600 text-white rounded-lg p-6 flex items-center justify-between">
+            <div>
+                <h2 class="text-4xl md:text-5xl font-bold mb-2">{{ $totalUser ?? '7' }}</h2>
+                <p class="text-xl md:text-2xl font-medium">Total Pengelola</p>
             </div>
-        </a>
-    </div>
-    <div class="col-20 col-lg-6">
-        <a href="{{ route('master.prodi.listprodi') }}">
-            <div class="card radius-15 bg-primary mb-4">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h1 class="mb-0 text-white">{{ $totalProdi }}</h1>
-                        </div>
-                        <div class="ms-auto font-30 text-primary"><i class="bx bx-book-reader text-white"></i></div>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h3 class="mb-0 text-white">Total Prodi</h3>
-                        </div>
-                    </div>
-                </div>
+            <div class="bg-teal-500 bg-opacity-30 p-4 rounded-full">
+                <i class="fas fa-user-circle text-3xl"></i>
             </div>
-        </a>
-    </div> --}}
-    <div class="col-20 col-lg-6">
-        <a href="{{ route('master.setup.listsetup') }}">
-            <div class="card radius-15 bg-primary mb-4">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h1 class="mb-0 text-white">{{ $totalSetup }}</h1>
-                        </div>
-                        <div class="ms-auto font-30 text-secondary"><i class="bx bx-cog text-white"></i></div>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h3 class="mb-0 text-white">Total Setup</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a>
-    </div>
+        </div>
+    </a>
+
+   
 </div>
-
 @endsection
 
 @section('custom-js')
+<script>
+    // Tidak perlu script tambahan karena animasi sudah diatur dengan CSS
+</script>
 @endsection

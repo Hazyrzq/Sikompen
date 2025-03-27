@@ -25,50 +25,83 @@ class mhswController extends Controller
     {
         $dataMahasiswa = MMahasiswa::all(); //narik semua dari db kirim ke view
         return view('master.mahasiswa.listmahasiswa', ['dataMahasiswa' => $dataMahasiswa]);
-    }
+    }// Method to show the create form
     public function mahasiswaShowCreate(Request $request)
     {
-        return view('master.mahasiswa.create');
+        // Ambil data prodi dan kelas untuk dropdown
+        $prodi = MProdi::all();
+        $kelas = MKelas::all();
+    
+        return view('master.mahasiswa.create', compact('prodi', 'kelas'));
     }
+    
     public function mahasiswaProsesAdd(Request $request)
     {
-
-        //mengecek kode user apakah sudah ada?
-        $kode_user = $request->input('kode_user');
-        $kode_userExists = MMahasiswa::where('kode_user', $kode_user)->exists();
-        if ($kode_userExists) {
-            Session::flash('alert-error', 'OOPSSS! NIM sudah ada!');
-            return redirect()->route('master.mahasiswa.create');
+        // Validasi input
+        $validatedData = $request->validate([
+            'kode_user' => 'required|unique:tbl_mahasiswa',
+            'nama_user' => 'required',
+            'email' => 'required|email|unique:tbl_mahasiswa',
+            'prodi' => 'required|exists:tbl_prodi,prodi',
+            'kelas' => 'required|exists:tbl_kelas,kelas',
+            'semester' => 'required|integer|min:1|max:8',
+            'jumlah_terlambat' => 'required|numeric|min:0',
+            'jumlah_alfa' => 'required|numeric|min:0',
+            'notelp' => 'nullable|string'
+        ]);
+    
+        try {
+            // Hitung poin terlambat (menit x 2)
+            $jumlah_terlambat = $request->input('jumlah_terlambat');
+            $poin_terlambat = $jumlah_terlambat * 2;
+    
+            // Hitung poin alfa (jam x 60 x 2)
+            $jumlah_alfa = $request->input('jumlah_alfa');
+            $poin_alfa = $jumlah_alfa * 60 * 2;
+    
+            // Hitung total poin
+            $total_poin = $poin_terlambat + $poin_alfa;
+    
+            // Buat record mahasiswa baru
+            $mahasiswa = new MMahasiswa();
+            $mahasiswa->kode_user = $request->input('kode_user');
+            $mahasiswa->nama_user = $request->input('nama_user');
+            $mahasiswa->email = $request->input('email');
+            $mahasiswa->prodi = $request->input('prodi');
+            $mahasiswa->kelas = $request->input('kelas');
+            $mahasiswa->semester = $request->input('semester');
+            $mahasiswa->notelp = $request->input('notelp');
+            $mahasiswa->jumlah_terlambat = $jumlah_terlambat;
+            $mahasiswa->jumlah_alfa = $jumlah_alfa;
+            $mahasiswa->total = $total_poin;
+            $mahasiswa->role = 'Mahasiswa';
+            
+            // Simpan data
+            $mahasiswa->save();
+    
+            // Log perhitungan
+            \Log::info('Perhitungan Poin Mahasiswa', [
+                'jumlah_terlambat' => $jumlah_terlambat,
+                'poin_terlambat' => $poin_terlambat,
+                'jumlah_alfa' => $jumlah_alfa,
+                'poin_alfa' => $poin_alfa,
+                'total_poin' => $total_poin
+            ]);
+    
+            // Tambahkan pesan flash dengan detail perhitungan
+            Session::flash('alert-success', "Berhasil Menambahkan Data. 
+                Poin Terlambat: $jumlah_terlambat menit x 2 = $poin_terlambat. 
+                Poin Alfa: $jumlah_alfa jam x 60 x 2 = $poin_alfa. 
+                Total Poin: $total_poin");
+    
+            return redirect()->route('master.mahasiswa.listmahasiswa');
+        } catch (Exception $e) {
+            // Log error dan flash error message
+            \Log::error('Gagal menambahkan mahasiswa: ' . $e->getMessage());
+            Session::flash('alert-error', 'Gagal Menambahkan Data: ' . $e->getMessage());
+            return redirect()->back()->withInput();
         }
-
-        $nama_user = $request->input('nama_user');
-        $nama_userExists = MMahasiswa::where('nama_user', $nama_user)->exists();
-        if ($nama_userExists) {
-            Session::flash('alert-error', 'OOPSSS! NIM sudah ada!');
-            return redirect()->route('master.mahasiswa.create');
-        }
-
-        $form_kode_user = $request->post('kode_user');
-        $form_nama_mahasiswa = $request->post('nama_mahasiswa');
-        $form_jumlah_terlambat = $request->post('jumlah_terlambat');
-        $form_jumlah_alfa = $request->post('jumlah_alfa');
-        $form_total = $request->post('total');
-
-        //set ke table
-        $tblMahasiswa = new MMahasiswa();
-        $tblMahasiswa->kode_user = $form_kode_user;
-        $tblMahasiswa->nama_mahasiswa = $form_nama_mahasiswa;
-        $tblMahasiswa->jumlah_terlambat = $form_jumlah_terlambat;
-        $tblMahasiswa->jumlah_alfa = $form_jumlah_alfa;
-        $tblMahasiswa->total = $form_total;
-        $tblMahasiswa->save(); // Simpan data ke database
-
-        Session::flash('alert-success', 'Berhasil Menambahkan Data');
-
-        // Redirect ke halaman selanjutnya
-        return redirect()->route('master.mahasiswa.listmahasiswa');
     }
-
     public function mahasiswaShowEdit(Request $request)
     {
         // -- ambil dari request id
@@ -87,100 +120,124 @@ class mhswController extends Controller
 
 
     public function mahasiswaProsesEdit(Request $request)
-    {
-        $form_oldid = $request->post('oldid');
-        $tblMahasiswa = MMahasiswa::findOrFail($form_oldid);
+{
+    // Validasi input
+    $validatedData = $request->validate([
+        'oldid' => 'required|exists:tbl_mahasiswa,id_mahasiswa',
+        'nama_user' => 'required|string|max:255',
+        'kode_user' => 'required|numeric',
+        'email' => 'required|email',
+        'semester' => 'required|integer|min:1|max:8',
+        'jumlah_terlambat' => 'required|numeric|min:0',
+        'jumlah_alfa' => 'required|numeric|min:0',
+        'total' => 'required|numeric|min:0'
+    ]);
 
-        $form_nama_user = $request->post('nama_user');
-        $form_oldkode_user = $tblMahasiswa->kode_user; // Simpan kode user lama untuk memeriksa perubahan
-        $form_kode_user = $request->post('kode_user');
-        $form_kelas = $request->post('kelas');
-        $form_semester = $request->post('semester');
-        $form_prodi = $request->post('prodi');
-        $form_jumlah_terlambat = $request->post('jumlah_terlambat');
-        $form_jumlah_alfa = $request->post('jumlah_alfa');
-        $form_total = $request->post('total');
+    // Cari mahasiswa berdasarkan ID
+    $tblMahasiswa = MMahasiswa::findOrFail($request->post('oldid'));
 
-        // Cek apakah kode user baru sudah ada di database
-        if ($form_kode_user !== $form_oldkode_user) {
-            $kode_userExists = MMahasiswa::where('kode_user', $form_kode_user)->exists();
-            if ($kode_userExists) {
-                Session::flash('alert-error', 'OOPSSS! Kode User sudah ada!');
-                return redirect()->route('master.mahasiswa.listmahasiswa');
-            }
+    // Cek apakah kode user baru sudah ada di database (jika berbeda)
+    if ($request->post('kode_user') != $tblMahasiswa->kode_user) {
+        $kode_userExists = MMahasiswa::where('kode_user', $request->post('kode_user'))->exists();
+        if ($kode_userExists) {
+            Session::flash('alert-error', 'OOPSSS! NIM sudah ada!');
+            return redirect()->back()->withInput();
         }
+    }
 
-        // Update data pengguna
-        $tblMahasiswa->kode_user = $form_kode_user;
-        $tblMahasiswa->nama_user = $form_nama_user;
-        $tblMahasiswa->kelas = $form_kelas;
-        $tblMahasiswa->semester = $form_semester;
-        $tblMahasiswa->prodi = $form_prodi;
-        $tblMahasiswa->jumlah_terlambat = $form_jumlah_terlambat;
-        $tblMahasiswa->jumlah_alfa = $form_jumlah_alfa;
-        $tblMahasiswa->total = $form_total;
+    // Cek apakah email baru sudah ada di database (jika berbeda)
+    if ($request->post('email') != $tblMahasiswa->email) {
+        $emailExists = MMahasiswa::where('email', $request->post('email'))->exists();
+        if ($emailExists) {
+            Session::flash('alert-error', 'OOPSSS! Email sudah digunakan!');
+            return redirect()->back()->withInput();
+        }
+    }
+
+    try {
+        // Update data mahasiswa
+        $tblMahasiswa->kode_user = $request->post('kode_user');
+        $tblMahasiswa->nama_user = $request->post('nama_user');
+        $tblMahasiswa->email = $request->post('email');
+        $tblMahasiswa->semester = $request->post('semester');
+        $tblMahasiswa->jumlah_terlambat = $request->post('jumlah_terlambat');
+        $tblMahasiswa->jumlah_alfa = $request->post('jumlah_alfa');
+        $tblMahasiswa->total = $request->post('total');
+        
+        // Tetap gunakan kelas dan prodi yang sudah ada
+        $tblMahasiswa->kelas = $request->post('kelas');
+        $tblMahasiswa->prodi = $request->post('prodi');
+
+        // Simpan perubahan
         $tblMahasiswa->save();
 
         // Jika total == 0, buat pengajuan baru jika diperlukan
-        if ($form_total == 0) {
+        if ($tblMahasiswa->total == 0) {
             $row = [
-                $form_kode_user,
-                $form_nama_user,
-                $form_kelas,
-                $form_prodi,
-                $form_semester,
-                $form_jumlah_terlambat,
-                $form_jumlah_alfa,
-                $form_total
+                $tblMahasiswa->kode_user,
+                $tblMahasiswa->nama_user,
+                $tblMahasiswa->kelas,
+                $tblMahasiswa->prodi,
+                $tblMahasiswa->semester,
+                $tblMahasiswa->jumlah_terlambat,
+                $tblMahasiswa->jumlah_alfa,
+                $tblMahasiswa->total
             ];
-            $this->createPengajuan($row, $form_jumlah_terlambat, $form_jumlah_alfa, $form_total);
+            $this->createPengajuan($row, $tblMahasiswa->jumlah_terlambat, $tblMahasiswa->jumlah_alfa, $tblMahasiswa->total);
         }
 
-        // Sesuai dengan kebutuhan Anda, Anda dapat menambahkan pesan sukses atau melakukan tindakan lainnya
+        // Tampilkan pesan sukses
         Session::flash('alert-success', 'Berhasil Mengubah Data');
         return redirect()->route('master.mahasiswa.listmahasiswa');
+
+    } catch (\Exception $e) {
+        // Tangani kesalahan
+        \Log::error('Gagal mengupdate mahasiswa: ' . $e->getMessage());
+        Session::flash('alert-error', 'Gagal Mengubah Data: ' . $e->getMessage());
+        return redirect()->back()->withInput();
     }
+}
 
-    private function createPengajuan($row, $jumlah_terlambat, $jumlah_alfa, $total)
-    {
-        $setupDataTerakhir = MSetupBertugas::orderBy('tgl_bertugas', 'desc')->take(3)->get();
+// Metode createPengajuan tetap sama seperti yang ada di controller Anda
+private function createPengajuan($row, $jumlah_terlambat, $jumlah_alfa, $total)
+{
+    $setupDataTerakhir = MSetupBertugas::orderBy('tgl_bertugas', 'desc')->take(3)->get();
 
-        // Cek apakah setupDataTerakhir mencakup peran yang sesuai
-        $approval1_by = $setupDataTerakhir->where('role', 'Pengawas')->first()->nama_user ?? null;
-        $approval2_by = $setupDataTerakhir->where('role', 'Kepala Lab')->first()->nama_user ?? null;
-        $approval3_by = $setupDataTerakhir->where('role', 'PLP')->first()->nama_user ?? null;
+    // Cek apakah setupDataTerakhir mencakup peran yang sesuai
+    $approval1_by = $setupDataTerakhir->where('role', 'Pengawas')->first()->nama_user ?? null;
+    $approval2_by = $setupDataTerakhir->where('role', 'Kepala Lab')->first()->nama_user ?? null;
+    $approval3_by = $setupDataTerakhir->where('role', 'PLP')->first()->nama_user ?? null;
 
-        // Buat pengajuan baru jika semua role ditemukan
-        if ($approval1_by && $approval2_by && $approval3_by) {
-            $existingPengajuan = MPengajuan::where('kode_user', $row[0])
-                ->where('kelas', $row[2])
-                ->where('semester', $row[4])
-                ->first();
+    // Buat pengajuan baru jika semua role ditemukan
+    if ($approval1_by && $approval2_by && $approval3_by) {
+        $existingPengajuan = MPengajuan::where('kode_user', $row[0])
+            ->where('kelas', $row[2])
+            ->where('semester', $row[4])
+            ->first();
 
-            if (!$existingPengajuan) {
-                $tbl_pengajuan = new MPengajuan();
-                $tbl_pengajuan->kode_user = $row[0];
-                $tbl_pengajuan->nama_user = $row[1];
-                $tbl_pengajuan->kelas = $row[2];
-                $tbl_pengajuan->prodi = $row[3];
-                $tbl_pengajuan->semester = $row[4];
-                $tbl_pengajuan->jumlah_terlambat = $jumlah_terlambat;
-                $tbl_pengajuan->jumlah_alfa = $jumlah_alfa;
-                $tbl_pengajuan->total = $total;
+        if (!$existingPengajuan) {
+            $tbl_pengajuan = new MPengajuan();
+            $tbl_pengajuan->kode_user = $row[0];
+            $tbl_pengajuan->nama_user = $row[1];
+            $tbl_pengajuan->kelas = $row[2];
+            $tbl_pengajuan->prodi = $row[3];
+            $tbl_pengajuan->semester = $row[4];
+            $tbl_pengajuan->jumlah_terlambat = $jumlah_terlambat;
+            $tbl_pengajuan->jumlah_alfa = $jumlah_alfa;
+            $tbl_pengajuan->total = $total;
 
-                $tbl_pengajuan->sisa = '0';
-                $tbl_pengajuan->status_approval1 = 'Disetujui';
-                $tbl_pengajuan->status_approval2 = 'Disetujui';
-                $tbl_pengajuan->status_approval3 = 'Disetujui';
-                $tbl_pengajuan->approval1_by = $approval1_by;
-                $tbl_pengajuan->approval2_by = $approval2_by;
-                $tbl_pengajuan->approval3_by = $approval3_by;
+            $tbl_pengajuan->sisa = '0';
+            $tbl_pengajuan->status_approval1 = 'Disetujui';
+            $tbl_pengajuan->status_approval2 = 'Disetujui';
+            $tbl_pengajuan->status_approval3 = 'Disetujui';
+            $tbl_pengajuan->approval1_by = $approval1_by;
+            $tbl_pengajuan->approval2_by = $approval2_by;
+            $tbl_pengajuan->approval3_by = $approval3_by;
 
-                $tbl_pengajuan->save();
-            }
+            $tbl_pengajuan->save();
         }
     }
-
+}
 
     public function mahasiswaProsesDelete(Request $request)
     {

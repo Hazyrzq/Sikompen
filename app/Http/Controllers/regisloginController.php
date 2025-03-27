@@ -33,15 +33,12 @@ class regisloginController extends Controller
             $data = ['kode_user' => $user->kode_user];
             $request->session()->regenerate();
 
-            // Jika pengguna belum mengedit password, redirect ke halaman pengaturan pengguna
-            if ($user->edit_password == 0) {
-                return redirect()->route('user.profile.edit'); // Redirect ke halaman pengaturan pengguna
-            }
+      
 
             // Redirect ke halaman yang sesuai berdasarkan peran pengguna
             switch ($user->role) {
                 case 'Admin Prodi':
-                    return redirect()->intended('/master/user/listuser'); // Redirect ke halaman Admin Prodi
+                    return redirect()->intended('/master/dashboard'); // Redirect ke halaman Admin Prodi
                 case 'Pengawas':
                     return redirect()->intended('/pengawas/listpengajuan'); // Redirect ke halaman Pengawas
                 case 'Kepala Lab':

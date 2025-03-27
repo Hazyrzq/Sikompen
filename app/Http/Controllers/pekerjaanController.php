@@ -17,6 +17,13 @@ class pekerjaanController extends Controller
     {
         $dataPekerjaan = MPekerjaan::all(); //narik semua dari db kirim ke view
         return view('master.pekerjaan.listpekerjaan', ['dataPekerjaan' => $dataPekerjaan]);
+         // Ambil semua data pekerjaan
+
+    // Filter untuk pencarian
+    if ($request->has('search')) {
+        $query->where('kode_pekerjaan', 'LIKE', '%' . $request->search . '%');
+    }
+        
     }
     public function pekerjaanShowCreate(Request $request)
     {
@@ -25,6 +32,10 @@ class pekerjaanController extends Controller
 
         return view('master.pekerjaan.create', compact('pengawas'));
     }
+
+
+    
+    
 
 
     public function pekerjaanProsesAdd(Request $request)
